@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/bonuska-sales/static/css/main.323d7611.css",
-    "main.js": "/bonuska-sales/static/js/main.d615d037.js",
+    "main.js": "/bonuska-sales/static/js/main.4e29cc65.js",
     "static/js/453.2fe01ed2.chunk.js": "/bonuska-sales/static/js/453.2fe01ed2.chunk.js",
     "index.html": "/bonuska-sales/index.html",
     "main.323d7611.css.map": "/bonuska-sales/static/css/main.323d7611.css.map",
-    "main.d615d037.js.map": "/bonuska-sales/static/js/main.d615d037.js.map",
+    "main.4e29cc65.js.map": "/bonuska-sales/static/js/main.4e29cc65.js.map",
     "453.2fe01ed2.chunk.js.map": "/bonuska-sales/static/js/453.2fe01ed2.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.323d7611.css",
-    "static/js/main.d615d037.js"
+    "static/js/main.4e29cc65.js"
   ]
 }
