@@ -5,6 +5,7 @@ import businessesData from './data/businesses.json';
 import { getAggregatedCategory } from './data/categoryMapping';
 import { usePersistence } from './hooks/usePersistence';
 import { SALES_STATUSES } from './data/salesStatus';
+import { LOYALTY_STATUSES } from './data/loyaltyStatus';
 
 function App() {
   const [selectedBusiness, setSelectedBusiness] = useState(null);
@@ -12,6 +13,7 @@ function App() {
   const [filters, setFilters] = useState({
     categories: [],
     statuses: Object.values(SALES_STATUSES),
+    loyaltyStatuses: Object.values(LOYALTY_STATUSES),
     searchTerm: '',
   });
 
@@ -37,6 +39,7 @@ function App() {
   const filteredBusinesses = useMemo(() => {
     return businessesData.filter(b => {
       const status = userAppData[b.id]?.status || SALES_STATUSES.REACHOUT;
+      const loyaltyStatus = userAppData[b.id]?.loyaltyStatus || LOYALTY_STATUSES.UNKNOWN;
       
       const bAggregatedCats = [
         getAggregatedCategory(b.firstCategory),
@@ -51,7 +54,9 @@ function App() {
       const nameMatch = !filters.searchTerm || 
         (b.name && b.name.toLowerCase().includes(filters.searchTerm.toLowerCase()));
       
-      return categoryMatch && statusMatch && nameMatch;
+      const loyaltyMatch = filters.loyaltyStatuses.includes(loyaltyStatus);
+      
+      return categoryMatch && statusMatch && nameMatch && loyaltyMatch;
     });
   }, [filters, userAppData]);
 

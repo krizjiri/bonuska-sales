@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { STATUS_CONFIG, SALES_STATUSES } from '../data/salesStatus';
+import { LOYALTY_STATUSES, LOYALTY_CONFIG } from '../data/loyaltyStatus';
 import { X, Phone, Mail, Globe, MapPin, Facebook, Instagram, Youtube, ExternalLink, StickyNote, MessageCircle, Search } from 'lucide-react';
 
 const Sidebar = ({ 
@@ -73,16 +74,32 @@ const Sidebar = ({
               ))}
             </div>
 
-            <div className="flex items-center pt-2 border-t">
-              <label className="flex items-center gap-2 cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={businessData.hasLoyaltySystem || false}
-                  onChange={(e) => onUpdateAppData(selectedBusiness.id, { hasLoyaltySystem: e.target.checked })}
-                  className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-gray-300 transition"
-                />
-                <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900 transition">Má věrnostní systém</span>
-              </label>
+            <div className="pt-4 border-t space-y-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Věrnostní systém</label>
+                <select
+                  value={businessData.loyaltyStatus || LOYALTY_STATUSES.UNKNOWN}
+                  onChange={(e) => onUpdateAppData(selectedBusiness.id, { loyaltyStatus: e.target.value })}
+                  className="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+                >
+                  {Object.entries(LOYALTY_CONFIG).map(([key, config]) => (
+                    <option key={key} value={key}>{config.label}</option>
+                  ))}
+                </select>
+              </div>
+
+              {businessData.loyaltyStatus === LOYALTY_STATUSES.YES && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1 text-xs">Poznámka k systému</label>
+                  <textarea
+                    value={businessData.loyaltyNote || ''}
+                    onChange={(e) => onUpdateAppData(selectedBusiness.id, { loyaltyNote: e.target.value })}
+                    placeholder="Doplňující info..."
+                    className="w-full p-2 border rounded text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                    rows={2}
+                  />
+                </div>
+              )}
             </div>
           </div>
 
@@ -201,6 +218,28 @@ const Sidebar = ({
                     <span className="w-3 h-3 rounded-full" style={{ backgroundColor: config.color }}></span>
                     <span className="text-sm text-gray-600 group-hover:text-gray-900">{config.label}</span>
                   </div>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div className="mb-8">
+            <h3 className="font-semibold text-gray-700 mb-3">Věrnostní systém</h3>
+            <div className="space-y-2">
+              {Object.entries(LOYALTY_CONFIG).map(([key, config]) => (
+                <label key={key} className="flex items-center gap-3 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={filters.loyaltyStatuses.includes(key)}
+                    onChange={(e) => {
+                      const newStatuses = e.target.checked
+                        ? [...filters.loyaltyStatuses, key]
+                        : filters.loyaltyStatuses.filter(s => s !== key);
+                      onUpdateFilters({ ...filters, loyaltyStatuses: newStatuses });
+                    }}
+                    className="w-4 h-4 rounded text-blue-600"
+                  />
+                  <span className="text-sm text-gray-600 group-hover:text-gray-900">{config.label}</span>
                 </label>
               ))}
             </div>

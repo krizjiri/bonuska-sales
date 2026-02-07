@@ -16,8 +16,11 @@ test('renders search input', () => {
   expect(searchInput).toBeInTheDocument();
 });
 
-test('loyalty checkbox is not present by default (until business is selected)', () => {
+test('renders loyalty filter in sidebar', () => {
   render(<App />);
-  const loyaltyCheckbox = screen.queryByLabelText(/Má věrnostní systém/i);
-  expect(loyaltyCheckbox).not.toBeInTheDocument();
+  const loyaltyTitle = screen.getByText(/Věrnostní systém/i);
+  expect(loyaltyTitle).toBeInTheDocument();
+  // We use queryAllByText because "Má" might be in categories or elsewhere if data was different, 
+  // but here we check for its presence in filters
+  expect(screen.getAllByText(/Má/i).length).toBeGreaterThan(0);
 });
