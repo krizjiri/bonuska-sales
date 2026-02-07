@@ -41,7 +41,7 @@ const createCustomIcon = (category, status) => {
   });
 };
 
-function MapController({ businesses, selectedBusiness }) {
+function MapController({ selectedBusiness }) {
   const map = useMap();
   
   useEffect(() => {
@@ -57,24 +57,14 @@ function MapController({ businesses, selectedBusiness }) {
       map.flyTo([selectedBusiness.lat, selectedBusiness.lng], 16, {
         duration: 1.5
       });
-    } else if (businesses.length > 0) {
-      // Automatické přizpůsobení výřezu mapy všem zobrazeným podnikům
-      const validPoints = businesses
-        .filter(b => b && typeof b.lat === 'number' && typeof b.lng === 'number')
-        .map(b => [b.lat, b.lng]);
-      
-      if (validPoints.length > 0) {
-        const bounds = L.latLngBounds(validPoints);
-        map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
-      }
     }
-  }, [selectedBusiness, businesses, map]);
+  }, [selectedBusiness, map]);
   
   return null;
 }
 
 const MapComponent = ({ businesses, userAppData, onSelectBusiness, selectedBusiness }) => {
-  const center = [50.08, 14.43]; // Výchozí střed Praha
+  const center = [50.0835, 14.4252]; // Praha - centrum
 
   // Filtrování podniků s platnými souřadnicemi
   const validBusinesses = businesses.filter(b => 
@@ -92,7 +82,7 @@ const MapComponent = ({ businesses, userAppData, onSelectBusiness, selectedBusin
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <MapController businesses={validBusinesses} selectedBusiness={selectedBusiness} />
+      <MapController selectedBusiness={selectedBusiness} />
       {validBusinesses.map((business) => {
         const status = userAppData[business.id]?.status || SALES_STATUSES.REACHOUT;
         return (
