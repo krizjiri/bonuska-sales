@@ -5,6 +5,7 @@ import L from 'leaflet';
 // Import Leaflet styles in JS to ensure they are loaded
 import 'leaflet/dist/leaflet.css';
 import { getCategoryStyle } from '../data/categoryConfig';
+import { getAggregatedCategory } from '../data/categoryMapping';
 import { STATUS_CONFIG, SALES_STATUSES } from '../data/salesStatus';
 
 // Oprava výchozích ikon v Leafletu pro React
@@ -85,15 +86,17 @@ const MapComponent = ({ businesses, userAppData, onSelectBusiness, selectedBusin
       <MapController selectedBusiness={selectedBusiness} />
       {validBusinesses.map((business) => {
         const status = userAppData[business.id]?.status || SALES_STATUSES.REACHOUT;
+        const aggregatedCat = getAggregatedCategory(business.firstCategory);
         return (
           <Marker
             key={business.id}
             position={[business.lat, business.lng]}
-            icon={createCustomIcon(business.firstCategory, status)}
+            icon={createCustomIcon(aggregatedCat, status)}
           >
             <Popup>
               <div className="p-1 min-w-[200px]">
                 <h3 className="font-bold text-base">{business.name}</h3>
+                <p className="text-[10px] text-gray-400 uppercase font-semibold">{aggregatedCat}</p>
                 <p className="text-xs text-gray-600 mb-2">{business.firstCategory}</p>
                 
                 <div className="space-y-1 mb-3">

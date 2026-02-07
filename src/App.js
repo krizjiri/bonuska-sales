@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import MapComponent from './components/MapComponent';
 import Sidebar from './components/Sidebar';
 import businessesData from './data/businesses.json';
-import categoriesList from './data/categories_list.json';
+import { getAggregatedCategory } from './data/categoryMapping';
 import { usePersistence } from './hooks/usePersistence';
 import { SALES_STATUSES } from './data/salesStatus';
 
@@ -12,6 +12,7 @@ function App() {
   const [filters, setFilters] = useState({
     categories: [],
     statuses: Object.values(SALES_STATUSES),
+    searchTerm: '',
   });
 
   const handleUpdateAppData = (id, newData) => {
@@ -24,17 +25,33 @@ function App() {
     }));
   };
 
+  const aggregatedCategories = useMemo(() => {
+    const categories = new Set();
+    businessesData.forEach(b => {
+      if (b.firstCategory) categories.add(getAggregatedCategory(b.firstCategory));
+      if (b.secondCategory && b.secondCategory.trim()) categories.add(getAggregatedCategory(b.secondCategory));
+    });
+    return Array.from(categories).sort();
+  }, []);
+
   const filteredBusinesses = useMemo(() => {
     return businessesData.filter(b => {
       const status = userAppData[b.id]?.status || SALES_STATUSES.REACHOUT;
       
+      const bAggregatedCats = [
+        getAggregatedCategory(b.firstCategory),
+        b.secondCategory && b.secondCategory.trim() ? getAggregatedCategory(b.secondCategory) : null
+      ].filter(Boolean);
+
       const categoryMatch = filters.categories.length === 0 || 
-        filters.categories.includes(b.firstCategory) || 
-        filters.categories.includes(b.secondCategory);
+        filters.categories.some(cat => bAggregatedCats.includes(cat));
         
       const statusMatch = filters.statuses.includes(status);
+
+      const nameMatch = !filters.searchTerm || 
+        (b.name && b.name.toLowerCase().includes(filters.searchTerm.toLowerCase()));
       
-      return categoryMatch && statusMatch;
+      return categoryMatch && statusMatch && nameMatch;
     });
   }, [filters, userAppData]);
 
@@ -45,7 +62,7 @@ function App() {
         onCloseDetail={() => setSelectedBusiness(null)}
         userAppData={userAppData}
         onUpdateAppData={handleUpdateAppData}
-        allCategories={categoriesList}
+        allCategories={aggregatedCategories}
         filters={filters}
         onUpdateFilters={setFilters}
       />

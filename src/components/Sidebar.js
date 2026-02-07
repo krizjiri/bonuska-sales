@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { STATUS_CONFIG, SALES_STATUSES } from '../data/salesStatus';
-import { X, Phone, Mail, Globe, MapPin, Facebook, Instagram, Youtube, ExternalLink, StickyNote, MessageCircle } from 'lucide-react';
+import { X, Phone, Mail, Globe, MapPin, Facebook, Instagram, Youtube, ExternalLink, StickyNote, MessageCircle, Search } from 'lucide-react';
 
 const Sidebar = ({ 
   selectedBusiness, 
@@ -32,18 +32,31 @@ const Sidebar = ({
 
   return (
     <div className="w-96 h-screen overflow-y-auto bg-white border-r shadow-xl flex flex-col">
+      <div className="p-6 border-b sticky top-0 bg-white z-10">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+          <input
+            type="text"
+            placeholder="Hledat podnik..."
+            value={filters.searchTerm}
+            onChange={(e) => onUpdateFilters({ ...filters, searchTerm: e.target.value })}
+            className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+          />
+        </div>
+      </div>
       {selectedBusiness ? (
         <div className="p-6">
-          <div className="flex justify-between items-start mb-4">
+          <div className="flex justify-between items-start mb-2">
             <h2 className="text-2xl font-bold text-gray-800">{selectedBusiness.name}</h2>
             <button onClick={onCloseDetail} className="p-1 hover:bg-gray-100 rounded">
               <X size={24} />
             </button>
           </div>
+          <p className="text-sm text-gray-500 mb-4">{selectedBusiness.firstCategory}</p>
 
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-2">Sales Status</label>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-2 mb-4">
               {Object.entries(STATUS_CONFIG).map(([key, config]) => (
                 <button
                   key={key}
@@ -58,6 +71,18 @@ const Sidebar = ({
                   {config.label}
                 </button>
               ))}
+            </div>
+
+            <div className="flex items-center pt-2 border-t">
+              <label className="flex items-center gap-2 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={businessData.hasLoyaltySystem || false}
+                  onChange={(e) => onUpdateAppData(selectedBusiness.id, { hasLoyaltySystem: e.target.checked })}
+                  className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-gray-300 transition"
+                />
+                <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900 transition">Má věrnostní systém</span>
+              </label>
             </div>
           </div>
 
@@ -183,8 +208,8 @@ const Sidebar = ({
 
           <div className="mb-8">
             <h3 className="font-semibold text-gray-700 mb-3">Kategorie</h3>
-            <div className="max-h-96 overflow-y-auto space-y-2 pr-2 border-t pt-2">
-              {allCategories.filter(cat => cat && cat.trim()).slice(0, 50).map(cat => (
+            <div className="max-h-[50vh] overflow-y-auto space-y-2 pr-2 border-t pt-2">
+              {allCategories.filter(cat => cat && cat.trim()).map(cat => (
                 <label key={cat} className="flex items-center gap-3 cursor-pointer group">
                   <input
                     type="checkbox"
@@ -200,7 +225,6 @@ const Sidebar = ({
                   <span className="text-sm text-gray-600 group-hover:text-gray-900 truncate">{cat}</span>
                 </label>
               ))}
-              {allCategories.length > 50 && <p className="text-xs text-gray-400 italic">...a {allCategories.length - 50} dalších</p>}
             </div>
           </div>
         </div>
